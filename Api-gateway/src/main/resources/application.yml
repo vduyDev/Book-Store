@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: api-gateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9999/realms/vanduy
+          jwk-set-uri: http://localhost:9999/realms/vanduy/protocol/openid-connect/certs
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: identity-service
+          uri: lb://identity-service
+          predicates:
+            - Path=/customers/**
+
+        - id: book-service
+          uri: lb://book-service
+          predicates:
+            - Path=/books/**,/categories/**
+
+        - id: borrowing-service
+          uri: lb://borrowing-service
+          predicates:
+            - Path=/borrowings/**, /borrowinglines/**
+
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/payments/**
+
+      filters:
+        - TokenRelay
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+      register-with-eureka: true
+      fetch-registry: true

@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: common-service
+  kafka:
+    consumer:
+      group-id: borrow
+      bootstrap-servers: localhost:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+server:
+  port: 8888
+
+cloudinary:
+  cloud_name: dcx9dlyqg
+  api_key: 344566584741526
+  api_secret: aNOy-txvYMRy4YHbMwKtsrS5TcY
+
+

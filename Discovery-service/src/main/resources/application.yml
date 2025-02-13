@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: discovery-server
+server:
+  port: 8761
+eureka:
+  client:
+    # cai nao la server thi false, discover client dang ky thi true
+    register-with-eureka: false
+    # khong can hien thi danh sach discover client
+    fetch-registry: false
+    registry-fetch-interval-seconds: 1
+logging:
+  level:
+    com.netflix.eureka: OFF
+    com.netflix.discovery: OFF

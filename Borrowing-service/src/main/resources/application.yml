@@ -1,0 +1,32 @@
+
+server:
+  port: 8083
+spring:
+  application:
+    name: borrowing-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/borrowing_service
+    username: root
+    password: 123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9999/realms/vanduy
+          jwk-set-uri: http://localhost:9999/realms/vanduy/protocol/openid-connect/certs
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+      register-with-eureka: true
