@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface BookService {
     PageResponse<BookResponse> lisBook(int page, int size);
-    BookResponse getBookById(Integer id);
+    Book getBookById(Integer id);
     void deleteBookById(Integer id);
     BookResponse createBook(BookRequest book,MultipartFile file);
     PageResponse<BookResponse> searchBookByName(String name,int page, int size);

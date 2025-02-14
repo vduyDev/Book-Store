@@ -1,6 +1,6 @@
 package com.example.borrowingservice.clients;
-import com.example.borrowingservice.config.FeignClientConfig;
 import com.example.common.DTO.BookPurchaseDTO;
+import com.example.common.configure.FeignClientConfig;
 import com.example.common.request.BookPurchaseRequest;
 import com.example.common.response.BookResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -13,6 +13,6 @@ public interface BookClient {
     List<BookPurchaseDTO> updateBookStock(List<BookPurchaseRequest> request);
 
     @PostMapping("/books/get-list-book-by-list-id")
-    List<BookResponse> addBookStock(List<Integer> booksid);
+    List<BookResponse> getListBook(List<Integer> booksid);
 
 }

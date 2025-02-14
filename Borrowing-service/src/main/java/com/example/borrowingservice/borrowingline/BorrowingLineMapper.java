@@ -20,14 +20,12 @@ public class BorrowingLineMapper {
     }
 
     public static BorrowingLineDTO toBorrowingLineDTO(BorrowingLine borrowingLine) {
-        BookPurchaseDTO book = BookPurchaseDTO.builder()
-                .bookId(borrowingLine.getBookId())
-                .build();
+
 
 
         return BorrowingLineDTO.builder()
                 .id(borrowingLine.getId())
-                .book(book)
+
                 .returnDate(borrowingLine.getReturnDate())
                 .dueDate(borrowingLine.getDueDate())
                 .status(borrowingLine.getStatus())

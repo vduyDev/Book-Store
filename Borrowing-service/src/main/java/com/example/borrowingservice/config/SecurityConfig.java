@@ -17,6 +17,8 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests( auth -> auth
+                        .requestMatchers("/borrowinglines/get-by-borrowing/**")
+                        .permitAll()
                         .anyRequest()
                         .authenticated()
                 )

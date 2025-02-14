@@ -72,9 +72,5 @@ public class PaymentController {
                 .build();
     }
 
-    @GetMapping("/test/{message}")
-    public void test(@PathVariable String message) {
-        paymentProducer.sendMessage(message);
-        log.info("Send message: {}", message);
-    }
+
 }

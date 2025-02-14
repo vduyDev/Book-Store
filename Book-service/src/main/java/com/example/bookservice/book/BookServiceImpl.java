@@ -101,13 +101,13 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookResponse> getBookByListId(List<Integer> ids) {
-        return List.of();
+
+        return bookRepo.findByIdIn(ids).stream().map(BookMapper::toBookResponse).toList() ;
     }
 
     @Override
-    public BookResponse getBookById(Integer id) {
-        Book book = findBookById(id);
-        return BookMapper.toBookResponse(book);
+    public Book getBookById(Integer id) {
+        return  findBookById(id);
     }
 
     @Override

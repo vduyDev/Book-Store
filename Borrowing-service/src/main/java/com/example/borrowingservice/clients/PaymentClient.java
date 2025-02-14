@@ -1,5 +1,5 @@
 package com.example.borrowingservice.clients;
-import com.example.borrowingservice.config.FeignClientConfig;
+import com.example.common.configure.FeignClientConfig;
 import com.example.common.request.PaymentRequest;
 import com.example.common.response.PaymentResponse;
 import org.springframework.cloud.openfeign.FeignClient;

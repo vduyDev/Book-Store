@@ -24,6 +24,7 @@ public class BookMapper {
                 .urlImage(book.getImageUrl())
                 .name(book.getName())
                 .id(book.getId())
+                .price(book.getPrice())
                 .build();
     }
 
@@ -45,4 +46,5 @@ public class BookMapper {
                 .image(books.getImageUrl())
                 .build();
     }
+
 }

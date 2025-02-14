@@ -118,6 +118,7 @@ public class PaymentStripe implements PaymentService {
     @Override
     public void fail(String borrowingId, Long amount, PaymentMethod method) {
          paymentProducer.sendMessage(borrowingId);
+
         Payment payment = Payment.builder()
                 .paymentMethod(method)
                 .amount(amount)

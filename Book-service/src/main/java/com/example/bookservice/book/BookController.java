@@ -1,6 +1,8 @@
 package com.example.bookservice.book;
 
+import com.example.bookservice.clients.BorrowingClient;
 import com.example.common.DTO.BookPurchaseDTO;
+import com.example.common.DTO.BorrowingLineDTO;
 import com.example.common.request.BookPurchaseRequest;
 import com.example.common.request.BookRequest;
 import com.example.common.request.StockUpdateRequest;
@@ -20,7 +22,7 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
-
+    private final BorrowingClient borrowingClient;
 
     @GetMapping
     public ApiResponse<PageResponse<BookResponse>> getListBook(
@@ -102,9 +104,10 @@ public class BookController {
 
     @GetMapping("/{id}")
     public ApiResponse<BookResponse> getBookById(@PathVariable Integer id) {
+        BookResponse  bookResponse = BookMapper.toBookResponse(bookService.getBookById(id));
         return ApiResponse.<BookResponse>builder()
                 .status(200)
-                .data(bookService.getBookById(id))
+                .data(bookResponse)
                 .message("Success")
                 .build();
     }
@@ -112,5 +115,11 @@ public class BookController {
     @PostMapping("/get-list-book-by-list-id")
     public List<BookResponse> getBookByListId(@RequestBody List<Integer> ids) {
         return bookService.getBookByListId(ids);
+    }
+
+    @GetMapping("/demo/{borrowingId}")
+    public List<BorrowingLineDTO> getBorrowingLinesByBorrowingId(@PathVariable String borrowingId) {
+        System.out.println("demo");
+        return borrowingClient.getBorrowingLinesByBorrowingId(borrowingId).getData();
     }
 }

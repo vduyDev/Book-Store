@@ -1,0 +1,21 @@
+package com.example.borrowingservice.config;
+
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+import jakarta.ws.rs.core.HttpHeaders;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+
+public class FeignClientConfig implements RequestInterceptor {
+    @Override
+    public void apply(RequestTemplate requestTemplate) {
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        var request = servletRequestAttributes.getRequest();
+        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(authorizationHeader)) {
+            requestTemplate.header(HttpHeaders.AUTHORIZATION, authorizationHeader);
+        }
+    }
+}

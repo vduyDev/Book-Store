@@ -17,9 +17,9 @@ public class BorrowingLineController {
 
     private final BorrowingLineService borrowingLineService;
 
-    @GetMapping("get-by-borrowing/{borrowingId}")
+    @GetMapping("/get-by-borrowing/{borrowingId}")
     public ApiResponse<List<BorrowingLineDTO>> getBorrowingLinesByBorrowingId(@PathVariable String borrowingId) {
-     
+
         return ApiResponse.<List<BorrowingLineDTO>>builder()
                 .status(200)
                 .message("Success")
