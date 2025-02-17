@@ -1,12 +1,18 @@
 package com.example.identityservice.customer;
+
+import com.example.common.DTO.CustomerDTO;
 import com.example.common.enums.ErrorCode;
 import com.example.common.exception.AppException;
+import com.example.common.request.AuthRequest;
 import com.example.common.request.CustomerRequest;
 import com.example.common.request.CustomerUpdateRequest;
 import jakarta.ws.rs.core.Response;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -14,18 +20,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.keycloak.admin.client.Keycloak;
 import org.springframework.stereotype.Service;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
+
 
     @Autowired
     private Keycloak keycloak;
 
     @Value("${keycloak.realm}")
     private String realmKey;
+
+    @Value("${keycloak.realm}")
+    private  String realm;
+    @Value("${keycloak.adminClientId}")
+    private String client;
+    @Value("${keycloak.urls.auth}")
+    private String url;
+    @Value("${keycloak.adminClientSecret}")
+    private String clientSecret;
 
 
     @Override
@@ -112,6 +130,38 @@ public class CustomerServiceImpl implements CustomerService {
         getUsersResource().get(id).update(user);
         return CustomerMapper.userToCustomer(user);
     }
+
+    @Override
+    public AccessTokenResponse login(AuthRequest authRequest) {
+        Keycloak keycloak1 = KeycloakBuilder.builder()
+                .clientId(client)
+                .realm(realm)
+                .grantType("password")
+                .serverUrl(url)
+                .username(authRequest.getUsername())
+                .password(authRequest.getPassword())
+                .clientSecret(clientSecret)
+                .build();
+
+        return keycloak1.tokenManager().getAccessToken();
+    }
+
+    @Override
+    public CustomerDTO getCustomerInBorrowing(String id) {
+        Customer customer = getCustomerById(id);
+        return CustomerDTO.builder()
+                .name(customer.getLastName())
+                .id(customer.getId())
+                .build();
+
+    }
+
+    @Override
+    public List<CustomerDTO> getListCustomerInBorrowing() {
+        List<UserRepresentation> users = getUsersResource().list();
+        return  users.stream().map(CustomerMapper::toCustomerDTO).toList();
+    }
+
 
     private UsersResource getUsersResource() {
         RealmResource realm = keycloak.realm(realmKey);

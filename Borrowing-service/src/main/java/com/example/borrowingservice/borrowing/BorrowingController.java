@@ -1,5 +1,6 @@
 package com.example.borrowingservice.borrowing;
 
+import com.example.common.response.BorrowingResponse;
 import com.example.common.response.PaymentResponse;
 import com.example.common.request.BorrowingRequest;
 import com.example.common.response.ApiResponse;
@@ -7,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/borrowings")
@@ -25,4 +27,21 @@ public class BorrowingController {
                 .build();
     }
 
+    @GetMapping("/{id}")
+    public ApiResponse<BorrowingResponse> getBorrowingById(@PathVariable String id){
+        return  ApiResponse.<BorrowingResponse>builder()
+                .message("successfully")
+                .status(200)
+                .data(borrowingService.getBorrowingById(id))
+                .build();
+    }
+
+    @GetMapping
+    public  ApiResponse<List<BorrowingResponse>> getListBorrowing(){
+        return ApiResponse.<List<BorrowingResponse>>builder()
+                .message("successfully")
+                .status(200)
+                .data(borrowingService.getListBorrowing())
+                .build();
+    }
 }

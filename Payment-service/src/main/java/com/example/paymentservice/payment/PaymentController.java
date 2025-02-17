@@ -1,14 +1,12 @@
 
 package com.example.paymentservice.payment;
 
+import com.example.common.DTO.PaymentDTO;
 import com.example.common.enums.PaymentMethod;
-import com.example.common.enums.Status;
 import com.example.common.request.PaymentRequest;
 import com.example.common.response.PaymentResponse;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,16 +17,17 @@ import java.util.List;
 public class PaymentController {
 
     @Autowired
-    private List<PaymentService> paymentService;
+    private List<PaymentProcessService> paymentProcessServices;
 
     @Autowired
-    private PaymentProducer paymentProducer;
+    private PaymentService paymentService;
+
 
     @PostMapping("/process")
     public PaymentResponse process(@RequestBody PaymentRequest request) {
 
-        return paymentService.stream()
-                .filter(paymentService -> paymentService.support(request.getPaymentMethod().name()))
+        return paymentProcessServices.stream()
+                .filter(paymentProcessService -> paymentProcessService.support(request.getPaymentMethod().name()))
                 .findFirst()
                 .orElseThrow()
                 .createPayment(request);
@@ -41,8 +40,8 @@ public class PaymentController {
             @RequestParam("amount") Long amount,
             @RequestParam("method") PaymentMethod method
     ) {
-        paymentService.stream()
-                .filter(paymentService -> paymentService.support(method.name()))
+        paymentProcessServices.stream()
+                .filter(paymentProcessService -> paymentProcessService.support(method.name()))
                 .findFirst()
                 .orElseThrow()
                 .success(borrowingId, amount, method);
@@ -60,8 +59,8 @@ public class PaymentController {
             @RequestParam("method") PaymentMethod method,
             @RequestParam("amount") Long amount
     ) {
-        paymentService.stream()
-                .filter(paymentService -> paymentService.support(method.name()))
+        paymentProcessServices.stream()
+                .filter(paymentProcessService -> paymentProcessService.support(method.name()))
                 .findFirst()
                 .orElseThrow()
                 .fail(borrowingId, amount, method);
@@ -72,5 +71,13 @@ public class PaymentController {
                 .build();
     }
 
+    @GetMapping("/get-payment-by-borrowing-id/{id}")
+    public PaymentDTO getPaymentByBorrowingId(@PathVariable String id) {
+        return paymentService.getPaymentByBorrowingId(id);
+    }
 
+    @GetMapping
+    public List<PaymentDTO> getListPayment() {
+        return paymentService.getListPayment();
+    }
 }

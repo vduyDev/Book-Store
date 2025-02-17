@@ -3,16 +3,12 @@ import com.example.common.request.PaymentRequest;
 import com.example.common.response.PaymentResponse;
 import com.example.common.enums.PaymentMethod;
 import com.example.paymentservice.config.VNPAYConfig;
-import com.example.paymentservice.utils.VNPayUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 @Service
 @AllArgsConstructor
-public class PaymentVNPay implements PaymentService {
+public class PaymentProcessVNPay implements PaymentProcessService {
     private final VNPAYConfig vnPayConfig;
 
     @Override

@@ -20,7 +20,7 @@ import java.util.List;
 
 
 @Service
-public class PaymentStripe implements PaymentService {
+public class PaymentProcessStripe implements PaymentProcessService {
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -110,6 +110,7 @@ public class PaymentStripe implements PaymentService {
                 .paymentMethod(method)
                 .amount(amount)
                 .borrowingId(borrowingId)
+                .status(Status.SUCCESS)
                 .build();
         paymentRepository.save(payment);
 

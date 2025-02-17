@@ -3,14 +3,12 @@ package com.example.paymentservice.payment;
 import com.example.common.request.PaymentRequest;
 import com.example.common.response.PaymentResponse;
 import com.example.common.enums.PaymentMethod;
-import com.example.common.enums.Status;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class PaymentCash implements PaymentService {
+public class PaymentProcessCash implements PaymentProcessService {
 
     private final PaymentRepository paymentRepository;
 

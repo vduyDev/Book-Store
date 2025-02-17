@@ -1,12 +1,16 @@
 package com.example.identityservice.customer;
+import com.example.common.DTO.CustomerDTO;
+import com.example.common.request.AuthRequest;
 import com.example.common.request.CustomerRequest;
 import com.example.common.request.CustomerUpdateRequest;
 import com.example.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/customers")
@@ -15,6 +19,11 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+
+    @PostMapping("/login")
+    public AccessTokenResponse login(@RequestBody AuthRequest authRequest){
+        return  customerService.login(authRequest);
+    }
     @GetMapping
     public ApiResponse<List<Customer>> listCustomer (){
         return  ApiResponse.<List<Customer>>builder()
@@ -61,4 +70,13 @@ public class CustomerController {
                 .build();
     }
 
+    @GetMapping("/get-customer-in-borrwing/{id}")
+    public CustomerDTO getCustomerInBorrowing(@PathVariable String id){
+        return  customerService.getCustomerInBorrowing(id);
+    }
+
+    @GetMapping("/get-list-customer-in-borrowing")
+    List<CustomerDTO> getListCustomerInBorrowing(){
+        return  customerService.getListCustomerInBorrowing();
+    }
 }

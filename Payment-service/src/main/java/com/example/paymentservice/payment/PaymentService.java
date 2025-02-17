@@ -1,13 +1,26 @@
 package com.example.paymentservice.payment;
 
-import com.example.common.enums.PaymentMethod;
-import com.example.common.request.PaymentRequest;
-import com.example.common.response.PaymentResponse;
-import jakarta.servlet.http.HttpServletRequest;
 
-public interface PaymentService {
-    boolean support(String paymentType);
-    PaymentResponse createPayment(PaymentRequest request);
-    void success(String borrowingId, Long amount, PaymentMethod method);
-    void fail(String borrowingId, Long amount, PaymentMethod method);
+import com.example.common.DTO.PaymentDTO;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@AllArgsConstructor
+public class PaymentService {
+
+    private  final PaymentRepository paymentRepository;
+
+
+    public PaymentDTO getPaymentByBorrowingId(String id) {
+        Payment payment = paymentRepository.getPaymentByBorrowingId(id);
+        return PaymentMapper.toPaymentDTO(payment);
+    }
+
+    public List<PaymentDTO> getListPayment() {
+        List<Payment> payments = paymentRepository.findAll();
+        return payments.stream().map(PaymentMapper::toPaymentDTO).toList();
+    }
 }

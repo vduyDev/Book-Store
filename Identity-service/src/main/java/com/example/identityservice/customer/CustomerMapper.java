@@ -1,6 +1,7 @@
 package com.example.identityservice.customer;
 
 
+import com.example.common.DTO.CustomerDTO;
 import com.example.common.request.CustomerRequest;
 import org.keycloak.representations.idm.UserRepresentation;
 
@@ -28,6 +29,13 @@ public class  CustomerMapper {
                 .lastName(user.getLastName())
                 .phone(phone)
                 .address(address)
+                .build();
+    }
+
+    public static CustomerDTO toCustomerDTO(UserRepresentation userRepresentation) {
+        return CustomerDTO.builder()
+                .name(userRepresentation.getLastName())
+                .id(userRepresentation.getId())
                 .build();
     }
 }
