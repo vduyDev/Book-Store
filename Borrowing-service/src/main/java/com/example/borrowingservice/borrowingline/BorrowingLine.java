@@ -26,7 +26,6 @@ public class BorrowingLine {
     @Enumerated(EnumType.STRING)
     StatusBorrowing status;
     Integer quantity;
-    Long fine;
     @ManyToOne
     @JoinColumn(name = "borrowing_id")
     Borrowing borrowing;

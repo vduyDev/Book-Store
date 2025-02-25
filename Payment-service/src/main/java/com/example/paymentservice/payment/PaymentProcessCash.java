@@ -1,5 +1,6 @@
 package com.example.paymentservice.payment;
 
+import com.example.common.enums.Status;
 import com.example.common.request.PaymentRequest;
 import com.example.common.response.PaymentResponse;
 import com.example.common.enums.PaymentMethod;
@@ -24,6 +25,7 @@ public class PaymentProcessCash implements PaymentProcessService {
         Payment payment = Payment.builder()
                 .paymentMethod(request.getPaymentMethod())
                 .amount(request.getAmount())
+                .status(Status.SUCCESS)
                 .borrowingId(request.getBorrowingId())
                 .build();
         paymentRepository.save(payment);

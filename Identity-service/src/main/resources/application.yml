@@ -10,13 +10,18 @@ spring:
       service-url:
         defaultZone: http://localhost:8761/eureka
         register-with-eureka: true
-
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:9999/realms/vanduy
           jwk-set-uri: http://localhost:9999/realms/vanduy/protocol/openid-connect/certs
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
 management:
   tracing:
     sampling:

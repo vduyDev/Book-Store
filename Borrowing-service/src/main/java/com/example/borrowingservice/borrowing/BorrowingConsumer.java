@@ -13,7 +13,7 @@ public class BorrowingConsumer {
     private final BorrowingService borrowingService;
 
     @KafkaListener(topics = "payment-failed", groupId = "borrowing")
-    public void deleteBorrowing(String borrowingId) {
+    public void updateStatusBorrowing(String borrowingId) {
         borrowingService.updateStatusBorrowingById(borrowingId);
        log.info("update borrowing {}", borrowingId);
     }

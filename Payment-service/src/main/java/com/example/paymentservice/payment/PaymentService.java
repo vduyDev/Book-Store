@@ -23,4 +23,9 @@ public class PaymentService {
         List<Payment> payments = paymentRepository.findAll();
         return payments.stream().map(PaymentMapper::toPaymentDTO).toList();
     }
+
+    public List<PaymentDTO> getPaymentByListBorrowing(List<String> ids) {
+        List<Payment> payments = paymentRepository.findAllByBorrowingIdIn(ids);
+        return payments.stream().map(PaymentMapper::toPaymentDTO).toList();
+    }
 }

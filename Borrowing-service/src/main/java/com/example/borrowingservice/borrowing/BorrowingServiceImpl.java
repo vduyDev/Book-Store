@@ -10,6 +10,7 @@ import com.example.common.DTO.BookPurchaseDTO;
 import com.example.common.DTO.CustomerDTO;
 import com.example.common.DTO.PaymentDTO;
 import com.example.common.enums.ErrorCode;
+import com.example.common.event.BookReturnEvent;
 import com.example.common.exception.AppException;
 import com.example.common.request.PaymentRequest;
 import com.example.common.response.BorrowingResponse;
@@ -18,13 +19,9 @@ import com.example.common.enums.StatusBorrowing;
 import com.example.common.request.BorrowingRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.security.Principal;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +31,7 @@ public class BorrowingServiceImpl implements BorrowingService {
     private final BorrowingRepository borrowingRepository;
     private final BorrowingLineRepository borrowingLineRepository;
     private final BookClient bookClient;
+    private final BorrowingProducer borrowingProducer;
     private final PaymentClient paymentClient;
     private final CustomerClient customerClient;
 
@@ -58,7 +56,6 @@ public class BorrowingServiceImpl implements BorrowingService {
             throw new AppException(ErrorCode.NotEnoughStock);
         }
 
-        // create borrowing
         List<BorrowingLine> borrowingLines = request.getBookPurchase().stream()
                 .map(BorrowingLineMapper::mapToBorrowingLine)
                 .toList();
@@ -70,7 +67,6 @@ public class BorrowingServiceImpl implements BorrowingService {
                 .paymentMethod(request.getPaymentMethod())
                 .totalBook(request.getBookPurchase().size())
                 .totalAmount(100000L)
-                .totalFine(0L)
                 .borrowingLines(borrowingLines)
                 .build();
 
@@ -101,22 +97,13 @@ public class BorrowingServiceImpl implements BorrowingService {
     @Override
     public void updateStatusBorrowingById(String id) {
         Borrowing borrowing = getById(id);
-        borrowing.setStatus(StatusBorrowing.CANCELLED);
+        borrowing.setStatus(StatusBorrowing.FAILED_PAYMENT);
         borrowingRepository.save(borrowing);
     }
 
-    //    @Override
-//    public List<BorrowingResponse> getListBorrowing() {
-//        List<Borrowing> borrowings = borrowingRepository.findAll();
-//        return borrowings.stream().map(borrowing -> {
-//            CustomerDTO customerDTO = customerClient.getCustomerInBorrowing(borrowing.getCustomerId());
-//            PaymentDTO paymentDTO = paymentClient.getPaymentByBorrowingId(borrowing.getId());
-//            return BorrowingMapper.toBorrowingResponse(borrowing, customerDTO, paymentDTO);
-//        }).toList();
-//    }
+
     public List<BorrowingResponse> getListBorrowing() {
         List<Borrowing> borrowings = borrowingRepository.findAll();
-        Set<String> listCustomerId = borrowings.stream().map(Borrowing::getCustomerId).collect(Collectors.toSet());
         List<CustomerDTO> listCustomerDTO = customerClient.getListCustomerInBorrowing();
         List<PaymentDTO> listPaymentDTO = paymentClient.getListPayment();
 
@@ -128,12 +115,69 @@ public class BorrowingServiceImpl implements BorrowingService {
         Map<String, PaymentDTO> paymentMap = listPaymentDTO.stream()
                 .collect(Collectors.toMap(PaymentDTO::getBorrowingId, payment -> payment));
 
-        return borrowings.stream().map(borrowing ->{
-           CustomerDTO  customerDTO = customerMap.get(borrowing.getCustomerId());
-           PaymentDTO paymentDTO = paymentMap.get(borrowing.getId());
-           return BorrowingMapper.toBorrowingResponse(borrowing,customerDTO,paymentDTO);
+        return borrowings.stream().map(borrowing -> {
+            CustomerDTO customerDTO = customerMap.get(borrowing.getCustomerId());
+            PaymentDTO paymentDTO = paymentMap.get(borrowing.getId());
+            return BorrowingMapper.toBorrowingResponse(borrowing, customerDTO, paymentDTO);
         }).toList();
     }
+
+    @Override
+    public List<BorrowingResponse> getListBorrowingByCustomer(String id) {
+        CustomerDTO customerDTO = customerClient.getCustomerInBorrowing(id);
+        List<Borrowing> borrowings = borrowingRepository.findBorrowingByCustomerId(id);
+        List<String> ids = borrowingRepository.findBorrowingByCustomerId(id).stream().map(Borrowing::getId).toList();
+        Map<String, PaymentDTO> paymentMap = paymentClient.getPaymentByListBorrowing(ids).stream()
+                .collect(Collectors.toMap(PaymentDTO::getBorrowingId, payment -> payment));
+        return borrowings.stream().map(borrowing -> {
+            PaymentDTO paymentDTO = paymentMap.get(borrowing.getId());
+            return BorrowingMapper.toBorrowingResponse(borrowing, customerDTO, paymentDTO);
+        }).toList();
+    }
+
+    @Override
+    public BorrowingResponse bookRecord(String id, List<Integer> request) {
+        Borrowing borrowing = getById(id);
+
+        if (borrowing.getStatus() == StatusBorrowing.COMPLETED) {
+            throw new AppException(ErrorCode.BorrowingCompleted);
+        }
+
+        List<BorrowingLine> updatedBorrowingLines = new ArrayList<>();
+
+        borrowing.getBorrowingLines().forEach(borrowingLine -> {
+            if (request.contains(borrowingLine.getBookId())) {
+                borrowingLine.setReturnDate(Instant.now());
+                borrowingLine.setStatus(StatusBorrowing.RETURNED);
+                updatedBorrowingLines.add(borrowingLine);
+            } else {
+                throw new AppException(ErrorCode.BookNotFound);
+            }
+        });
+        List<BookReturnEvent> bookPurchaseRequests = updatedBorrowingLines
+                .stream()
+                .map(BorrowingLineMapper::toBookPurchaseRequest)
+                .toList();
+
+        borrowingProducer.kafkaUpdateBookStock(bookPurchaseRequests);
+        // Lưu danh sách BorrowingLine đã cập nhật vào DB một lần duy nhất
+        if (!updatedBorrowingLines.isEmpty()) {
+            borrowingLineRepository.saveAll(updatedBorrowingLines);
+        }
+
+        // Kiểm tra nếu tất cả BorrowingLine đều đã RETURNED
+        boolean allReturned = borrowing.getBorrowingLines().stream()
+                .allMatch(borrowingLine -> borrowingLine.getStatus() == StatusBorrowing.RETURNED);
+
+        if (allReturned) {
+            borrowing.setStatus(StatusBorrowing.COMPLETED);
+            borrowingRepository.save(borrowing);
+        }
+        return getBorrowingById(id);
+    }
+
+
+
 
     private String getRandomNumber() {
         Random rnd = new Random();

@@ -1,17 +1,12 @@
 package com.example.borrowingservice.borrowingline;
-
-
 import com.example.borrowingservice.clients.BookClient;
 import com.example.common.DTO.BookPurchaseDTO;
 import com.example.common.DTO.BorrowingLineDTO;
 import com.example.common.response.BookResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,10 +35,10 @@ public class BorrowingLineService {
             BorrowingLine borrowingLine,
             Map<Integer, BookResponse> bookMap
     ) {
-        // Lấy book tương ứng từ Map
+
         BookResponse book = bookMap.get(borrowingLine.getBookId());
         if (book == null) {
-            return null; // Nếu không tìm thấy book, bỏ qua BorrowingLine này
+            return null;
         }
 
         // Tạo BookPurchaseDTO
@@ -59,4 +54,5 @@ public class BorrowingLineService {
         borrowingLineDTO.setBook(bookPurchaseDTO);
         return borrowingLineDTO;
     }
+
 }

@@ -30,7 +30,6 @@ public class Borrowing {
     Instant borrowDate;
     Long totalAmount;
     Integer totalBook;
-    Long totalFine;
     @Enumerated(EnumType.STRING)
     StatusBorrowing status;
     @Enumerated(EnumType.STRING)

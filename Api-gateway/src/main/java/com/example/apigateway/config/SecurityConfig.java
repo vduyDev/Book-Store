@@ -15,7 +15,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("(eureka/**)").permitAll()
+                        .pathMatchers("/customers/login").permitAll()
                         .anyExchange()
                         .authenticated()
                 )

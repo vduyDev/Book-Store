@@ -1,6 +1,4 @@
 package com.example.identityservice.customer;
-
-
 import lombok.*;
 
 @Getter

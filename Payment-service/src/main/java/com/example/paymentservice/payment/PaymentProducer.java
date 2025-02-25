@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class PaymentProducer {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendMessage(String message) {
         kafkaTemplate.send("payment-failed", message);

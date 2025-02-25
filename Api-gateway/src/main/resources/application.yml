@@ -1,3 +1,5 @@
+server:
+  port: 8080
 spring:
   application:
     name: api-gateway
@@ -35,6 +37,7 @@ spring:
 
       filters:
         - TokenRelay
+
 management:
   tracing:
     sampling:
@@ -45,3 +48,4 @@ eureka:
       defaultZone: http://localhost:8761/eureka
       register-with-eureka: true
       fetch-registry: true
+

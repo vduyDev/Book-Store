@@ -16,7 +16,9 @@ public enum ErrorCode {
     DeleteImageFailed(500, "Delete image failed"),
     UploadImageFailed(500, "Upload image failed"),
     CREATE_PAYMENT_SESSION_FAILED(500, "Create payment session failed"),
-    BorrowingNotFound(404, "Borrowing not found"),;
+    BorrowingNotFound(404, "Borrowing not found"),
+    BorrowingCompleted(400,"Borrowing was completed" )
+    ;
 
 
     ErrorCode(int status, String message) {

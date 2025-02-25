@@ -16,7 +16,6 @@ public class BorrowingMapper {
                 .borrowDate(borrowing.getBorrowDate())
                 .totalAmount(borrowing.getTotalAmount())
                 .totalBook(borrowing.getTotalBook())
-                .totalFine(borrowing.getTotalFine())
                 .status(borrowing.getStatus())
                 .payment(paymentDTO)
                 .customer(customerDTO)
