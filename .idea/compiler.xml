@@ -9,7 +9,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Api-gateway" />
         <module name="Common-service" />
-        <module name="notification-service" />
       </profile>
       <profile name="Annotation profile for Discovery-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -26,8 +25,10 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
         </processorPath>
         <module name="Book-service" />
+        <module name="Notification-service" />
         <module name="Identity-service" />
         <module name="Borrowing-service" />
         <module name="Payment-service" />
@@ -42,8 +43,8 @@
       <module name="Common-service" options="-parameters" />
       <module name="Discovery-service" options="-parameters" />
       <module name="Identity-service" options="-parameters" />
+      <module name="Notification-service" options="-parameters" />
       <module name="Payment-service" options="-parameters" />
-      <module name="notification-service" options="-parameters" />
     </option>
   </component>
 </project>

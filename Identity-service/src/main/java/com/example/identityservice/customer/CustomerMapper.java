@@ -32,10 +32,26 @@ public class  CustomerMapper {
                 .build();
     }
 
-    public static CustomerDTO toCustomerDTO(UserRepresentation userRepresentation) {
+    public static CustomerDTO toCustomerDTO(UserRepresentation user) {
+        String phone = user.getAttributes().getOrDefault("phone", Collections.singletonList(null)).get(0);
+        String address = user.getAttributes().getOrDefault("address", Collections.singletonList(null)).get(0);
         return CustomerDTO.builder()
-                .name(userRepresentation.getLastName())
-                .id(userRepresentation.getId())
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(phone)
+                .address(address)
+                .build();
+    }
+    public static CustomerDTO CustomertoCustomerDTO(Customer customer) {
+        return CustomerDTO.builder()
+                .id(customer.getId())
+                .email(customer.getEmail())
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .phone(customer.getPhone())
+                .address(customer.getAddress())
                 .build();
     }
 }

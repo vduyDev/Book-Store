@@ -1,24 +1,17 @@
-
 server:
-  port: 8082
+  port: 8085
 spring:
   application:
-    name: book-service
-  datasource:
-    url: jdbc:mysql://localhost:3306/book_service
-    username: root
-    password: 123
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+    name: notification-service
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:9999/realms/vanduy
           jwk-set-uri: http://localhost:9999/realms/vanduy/protocol/openid-connect/certs
+  data:
+    mongodb:
+      uri: mongodb://root:123@localhost:27017/notification-service?authSource=admin
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -28,6 +21,10 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+email:
+  dangvanduy4103@gmail.com
+password:
+  ucmj bdkb hsmw traw
 eureka:
   client:
     service-url:

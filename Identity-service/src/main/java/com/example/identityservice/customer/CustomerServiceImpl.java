@@ -47,11 +47,11 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public List<Customer> listCustomer() {
+    public List<CustomerDTO> listCustomer() {
         List<UserRepresentation> users = getUsersResource().list();
         return users
                 .stream()
-                .map(CustomerMapper::userToCustomer)
+                .map(CustomerMapper::toCustomerDTO)
                 .toList();
     }
 
@@ -64,9 +64,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer getCustomerById(String id) {
+    public CustomerDTO getCustomerById(String id) {
         UserRepresentation userRepresentation = getUserById(id);
-        return CustomerMapper.userToCustomer(userRepresentation);
+        return CustomerMapper.toCustomerDTO(userRepresentation);
     }
 
     private boolean userExists(String email) {
@@ -75,7 +75,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer createCustomer(CustomerRequest request) {
+    public CustomerDTO createCustomer(CustomerRequest request) {
         if (userExists(request.getEmail())) {
             throw new AppException(ErrorCode.CustomerAlreadyExists);
         }
@@ -109,7 +109,7 @@ public class CustomerServiceImpl implements CustomerService {
             assignRoleToUser(userId);
             Customer customer = CustomerMapper.requestToCustomer(request);
             customer.setId(userId);
-            return customer;
+            return CustomerMapper.CustomertoCustomerDTO(customer) ;
         }
 
         throw new AppException(ErrorCode.CustomerAlreadyExists);
@@ -117,7 +117,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public Customer updateCustomer(String id, CustomerUpdateRequest request) {
+    public CustomerDTO updateCustomer(String id, CustomerUpdateRequest request) {
         UserRepresentation user = getUserById(id);
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -128,7 +128,7 @@ public class CustomerServiceImpl implements CustomerService {
         );
         user.setAttributes(attribute);
         getUsersResource().get(id).update(user);
-        return CustomerMapper.userToCustomer(user);
+        return CustomerMapper.toCustomerDTO(user);
     }
 
     @Override
@@ -148,11 +148,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDTO getCustomerInBorrowing(String id) {
-        Customer customer = getCustomerById(id);
-        return CustomerDTO.builder()
-                .name(customer.getLastName())
-                .id(customer.getId())
-                .build();
+        return getCustomerById(id);
 
     }
 

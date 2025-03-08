@@ -1,7 +1,4 @@
 package com.example.borrowingservice.borrowing;
-
-import com.example.common.request.BookPurchaseRequest;
-import com.example.common.request.BookRecordRequest;
 import com.example.common.response.BorrowingResponse;
 import com.example.common.response.PaymentResponse;
 import com.example.common.request.BorrowingRequest;
@@ -20,9 +17,8 @@ public class BorrowingController {
 
     private final BorrowingService borrowingService;
 
-
     @Operation(summary ="Đặt sách" )
-    @PostMapping("/pur chase")
+    @PostMapping("/purchase")
     public ApiResponse<PaymentResponse> bookPurchase(@RequestBody BorrowingRequest request, Principal principal) {
 
         return ApiResponse.<PaymentResponse>builder()
@@ -70,7 +66,16 @@ public class BorrowingController {
                 .status(200)
                 .data( borrowingService.bookRecord(id,request))
                 .build();
+    }
 
-
+    @Operation(summary ="Cập nhật trạng thái đặt sách" )
+    @GetMapping("/update-status-borrowing")
+    public  ApiResponse<String> updateStatusBorrowing(){
+        borrowingService.updateStatusBorrowing();
+        return ApiResponse.<String>builder()
+                .message("successfully")
+                .status(200)
+                .data("Update status borrowing successfully")
+                .build();
     }
 }

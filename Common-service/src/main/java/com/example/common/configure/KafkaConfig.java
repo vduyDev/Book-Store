@@ -35,25 +35,25 @@ public class KafkaConfig {
     }
 
     // Cấu hình Kafka Consumer
-    @Bean
-    public ConsumerFactory<String, Object> consumerFactory() {
-        Map<String, Object> config = new HashMap<>();
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, "default-group");
-        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        return new DefaultKafkaConsumerFactory<>(config);
-    }
-
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
-        return factory;
-    }
+//    @Bean
+//    public ConsumerFactory<String, Object> consumerFactory() {
+//        Map<String, Object> config = new HashMap<>();
+//        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+//        config.put(ConsumerConfig.GROUP_ID_CONFIG, "default-group");
+//        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+//        config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+//        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+//        return new DefaultKafkaConsumerFactory<>(config);
+//    }
+//
+//    @Bean
+//    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
+//        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+//        factory.setConsumerFactory(consumerFactory());
+//        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+//        return factory;
+//    }
 
     // Tạo Kafka Topics
     @Bean
@@ -64,5 +64,14 @@ public class KafkaConfig {
     @Bean
     public NewTopic inventoryUpdatedTopic() {
         return new NewTopic("inventory-updated", 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic paymentSuccessTopic() {
+        return new NewTopic("payment-success", 1, (short) 1);
+    }
+    @Bean
+    public NewTopic BorrowingSuccessTopic() {
+        return new NewTopic("borrowing-success", 1, (short) 1);
     }
 }

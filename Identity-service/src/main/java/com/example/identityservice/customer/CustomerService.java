@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Set;
 
 public interface CustomerService {
-   List<Customer> listCustomer();
-   Customer getCustomerById(String id);
+   List<CustomerDTO> listCustomer();
+   CustomerDTO getCustomerById(String id);
    void deleteCustomerById(String id);
-   Customer createCustomer(CustomerRequest customer);
-   Customer updateCustomer(String id, CustomerUpdateRequest customer);
+   CustomerDTO createCustomer(CustomerRequest customer);
+   CustomerDTO updateCustomer(String id, CustomerUpdateRequest customer);
    AccessTokenResponse login(AuthRequest authRequest);
    CustomerDTO getCustomerInBorrowing(String id);
    List<CustomerDTO> getListCustomerInBorrowing();

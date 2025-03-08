@@ -29,8 +29,8 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ApiResponse<List<Customer>> listCustomer() {
-        return ApiResponse.<List<Customer>>builder()
+    public ApiResponse<List<CustomerDTO>> listCustomer() {
+        return ApiResponse.<List<CustomerDTO>>builder()
                 .data(customerService.listCustomer())
                 .status(200)
                 .message("Success")
@@ -39,8 +39,8 @@ public class CustomerController {
 
     @Operation(summary = "Láy danh sách customer theo id")
     @GetMapping("/{id}")
-    public ApiResponse<Customer> getCustomerById(@PathVariable String id) {
-        return ApiResponse.<Customer>builder()
+    public ApiResponse<CustomerDTO> getCustomerById(@PathVariable String id) {
+        return ApiResponse.<CustomerDTO>builder()
                 .data(customerService.getCustomerById(id))
                 .status(200)
                 .message("Success")
@@ -49,8 +49,8 @@ public class CustomerController {
 
     @Operation(summary = "Đăng ký tài khoản")
     @PostMapping
-    public ApiResponse<Customer> createCustomer(@Valid @RequestBody CustomerRequest request) {
-        return ApiResponse.<Customer>builder()
+    public ApiResponse<CustomerDTO> createCustomer(@Valid @RequestBody CustomerRequest request) {
+        return ApiResponse.<CustomerDTO>builder()
                 .data(customerService.createCustomer(request))
                 .status(201)
                 .message("Success")
@@ -70,8 +70,8 @@ public class CustomerController {
 
     @Operation(summary = "Cật nhật thông tin customer")
     @PutMapping("/{id}")
-    public ApiResponse<Customer> updateCustomer(@PathVariable String id, @Valid @RequestBody CustomerUpdateRequest request) {
-        return ApiResponse.<Customer>builder()
+    public ApiResponse<CustomerDTO> updateCustomer(@PathVariable String id, @Valid @RequestBody CustomerUpdateRequest request) {
+        return ApiResponse.<CustomerDTO>builder()
                 .data(customerService.updateCustomer(id, request))
                 .status(200)
                 .message("Success")
@@ -89,6 +89,7 @@ public class CustomerController {
     List<CustomerDTO> getListCustomerInBorrowing() {
         return customerService.getListCustomerInBorrowing();
     }
+
 
 
 }

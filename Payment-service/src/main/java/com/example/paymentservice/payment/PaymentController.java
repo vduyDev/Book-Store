@@ -1,10 +1,12 @@
 
 package com.example.paymentservice.payment;
 
+import com.example.common.DTO.CustomerDTO;
 import com.example.common.DTO.PaymentDTO;
 import com.example.common.enums.PaymentMethod;
 import com.example.common.request.PaymentRequest;
 import com.example.common.response.PaymentResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,7 @@ public class PaymentController {
 
     @Operation(summary = "Thanh toán")
     @PostMapping("/process")
-    public PaymentResponse process(@RequestBody PaymentRequest request) {
+    public PaymentResponse process(@RequestBody PaymentRequest request) throws JsonProcessingException {
 
         return paymentProcessServices.stream()
                 .filter(paymentProcessService -> paymentProcessService.support(request.getPaymentMethod().name()))
@@ -36,19 +38,19 @@ public class PaymentController {
                 .createPayment(request);
     }
 
-    @Operation(summary = "Thanh toán thành công")
+    @Operation(summary = "Thanh toán thành công( chỉ áp dụng cho Stripe )")
     @GetMapping("/success")
     public PaymentResponse success(
             @RequestParam("borrowingId") String borrowingId,
             @RequestParam("amount") Long amount,
-            @RequestParam("method") PaymentMethod method
-    ) {
+            @RequestParam("method") PaymentMethod method,
+            @RequestParam("customer") String customerJson
+    ) throws JsonProcessingException {
         paymentProcessServices.stream()
                 .filter(paymentProcessService -> paymentProcessService.support(method.name()))
                 .findFirst()
                 .orElseThrow()
-                .success(borrowingId, amount, method);
-
+                .success(borrowingId, amount, method,customerJson,null);
 
         return PaymentResponse
                 .builder()
@@ -56,7 +58,7 @@ public class PaymentController {
                 .build();
     }
 
-    @Operation(summary = "Thanh toán thất bại")
+    @Operation(summary = "Thanh toán thất bại( chỉ áp dụng cho Stripe )")
     @GetMapping("/cancel")
     public PaymentResponse cancel(
             @RequestParam("borrowingId") String borrowingId,
@@ -74,6 +76,7 @@ public class PaymentController {
                 .message("Payment cancel")
                 .build();
     }
+
     @Operation(summary = "Lấy thông tin thanh toán theo id theo thông tin đăt sách")
     @GetMapping("/get-payment-by-borrowing-id/{id}")
     public PaymentDTO getPaymentByBorrowingId(@PathVariable String id) {

@@ -9,6 +9,7 @@ import java.util.List;
 
 @FeignClient(name = "book-service",configuration = FeignClientConfig.class)
 public interface BookClient {
+
     @PostMapping("/books/update-stock")
     List<BookPurchaseDTO> updateBookStock(List<BookPurchaseRequest> request);
 

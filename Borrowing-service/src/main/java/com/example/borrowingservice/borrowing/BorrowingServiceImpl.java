@@ -1,5 +1,4 @@
 package com.example.borrowingservice.borrowing;
-
 import com.example.borrowingservice.borrowingline.BorrowingLine;
 import com.example.borrowingservice.borrowingline.BorrowingLineMapper;
 import com.example.borrowingservice.borrowingline.BorrowingLineRepository;
@@ -21,6 +20,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,8 +39,9 @@ public class BorrowingServiceImpl implements BorrowingService {
     @Override
     public PaymentResponse createBorrowing(BorrowingRequest request, Principal principal) {
 
-        // get customer id
+        // get customer
         String customerId = principal.getName();
+        CustomerDTO customerDTO = customerClient.getCustomerById(customerId).getData();
         // update stock
         List<BookPurchaseDTO> purchaseDTOList;
         try {
@@ -81,6 +83,7 @@ public class BorrowingServiceImpl implements BorrowingService {
                 .amount(borrowing.getTotalAmount())
                 .borrowingId(borrowing.getId())
                 .bookPurchaseDTOS(purchaseDTOList)
+                .customerDTO(customerDTO)
                 .build();
         return paymentClient.process(paymentRequest);
 
@@ -176,7 +179,24 @@ public class BorrowingServiceImpl implements BorrowingService {
         return getBorrowingById(id);
     }
 
-
+    @Override
+    public void updateStatusBorrowing() {
+        List<Borrowing> borrowings = borrowingRepository.findAll();
+        borrowings.forEach(borrowing -> {
+            borrowing.getBorrowingLines().forEach(borrowingLine -> {
+                if (borrowingLine.getReturnDate() == null) {
+                    LocalDate dueDate = borrowingLine.getDueDate().atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate currentDate = Instant.now().atZone(ZoneId.systemDefault()).toLocalDate();
+                    if (currentDate.isAfter(dueDate)) {
+                        borrowingLine.setStatus(StatusBorrowing.OVERDUE);
+                        borrowing.setStatus(StatusBorrowing.OVERDUE);
+                        borrowingLineRepository.save(borrowingLine);
+                        borrowingRepository.save(borrowing);
+                    }
+                }
+            });
+        });
+    }
 
 
     private String getRandomNumber() {
